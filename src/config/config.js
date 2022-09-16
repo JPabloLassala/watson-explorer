@@ -6,7 +6,7 @@ dotenv.config();
 const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid('dev', 'prod', 'local', 'test', 'qa', 'uat-wash', 'uat').required(),
-    NODE_PORT: Joi.number().default(3000),
+    PORT: Joi.number().default(3000),
     MAIN_NODE_NAME: Joi.string().required(),
     TARGET_NODE_NAME: Joi.string().required(),
     WATSON_DESA_AR_ID: Joi.string().required(),
@@ -54,7 +54,7 @@ if (error) throw new Error(`Config validation error: ${error.message}`);
 
 export default {
   env: envVars.NODE_ENV,
-  port: envVars.NODE_PORT,
+  port: envVars.PORT,
   watson: {
     Url: envVars.WATSON_URL,
     ar: {

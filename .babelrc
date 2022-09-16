@@ -12,7 +12,7 @@
     ]
   ],
   "env": {
-    "development": {
+    "dev": {
       "sourceMaps": "inline",
       "retainLines": true
     }
