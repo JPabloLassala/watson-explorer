@@ -5,10 +5,12 @@ export const getNodeValidation = {
   params: Joi.object().keys({
     country: Joi.string()
       .required()
+      .lowercase()
       .valid(...Countries)
       .description('Skill country'),
     env: Joi.string()
       .required()
+      .lowercase()
       .valid(...Environments)
       .description('Skill environment'),
     id: Joi.string().required().description('Dialog node ID'),
@@ -19,10 +21,12 @@ export const getNodeWithChildrenValidation = {
   params: Joi.object().keys({
     country: Joi.string()
       .required()
+      .lowercase()
       .valid(...Countries)
       .description('Skill country'),
     env: Joi.string()
       .required()
+      .lowercase()
       .valid(...Environments)
       .description('Skill environment'),
   }),

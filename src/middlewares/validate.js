@@ -8,7 +8,7 @@ const validate = schema => (req, res, next) => {
   const object = pick(req, Object.keys(validSchema));
   const { value, error } = Joi.compile(validSchema)
     .prefs({ errors: { label: 'key' } })
-    .validate(object);
+    .validate(object, { convert: true });
 
   if (error) {
     const errorMessage = error.details.map(details => details.message).join(', ');
