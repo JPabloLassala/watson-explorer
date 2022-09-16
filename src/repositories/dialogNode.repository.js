@@ -1,34 +1,50 @@
 import autobind from 'es6-autobind';
 import { createAssistant } from '../config';
-import { getAssistantParams } from '../utils';
+import { errorMessages } from '../constants';
+import { getAssistantParams, NodeListNotFoundError, NodeNotFoundError, WatsonError } from '../utils';
 
 export class DialogNodeRepository {
   constructor() {
     autobind(this);
   }
 
-  async getDialogNodeId({ country, env, nodeId }) {
-    const assistant = createAssistant({ country, env });
-    const params = getAssistantParams({ country, env }, { dialogNode: nodeId });
+  async getDialogNodeId({ country, env, nodeId }, assistant = null) {
+    try {
+      const params = getAssistantParams({ country, env }, { dialogNode: nodeId });
 
-    const dialogNodes = await assistant.listDialogNodes(params);
-    return dialogNodes.result;
+      const dialogNodes = await assistant.getDialogNode(params);
+      return dialogNodes.result;
+    } catch (error) {
+      if (error?.code === 404) {
+        throw new NodeNotFoundError({ country, env, nodeId });
+      }
+    }
   }
 
   async getDialogNodes({ country, env }) {
-    const assistant = createAssistant({ country, env });
-    const params = getAssistantParams({ country, env }, { pageLimit: 9999999 });
-    const dialogNodes = await assistant.listDialogNodes(params);
+    try {
+      const assistant = createAssistant({ country, env });
+      const params = getAssistantParams({ country, env }, { pageLimit: 9999999 });
+      const dialogNodes = await assistant.listDialogNodes(params);
 
-    return dialogNodes.result.dialog_nodes;
+      return dialogNodes.result.dialog_nodes;
+    } catch (error) {
+      if (error?.code === 404) {
+        throw new NodeListNotFoundError({ country, env });
+      }
+    }
   }
 
   async addNodesToSkill({ country, env, nodes }) {
-    const assistant = createAssistant({ country, env });
-    const params = getAssistantParams({ country, env }, { append: true, dialogNodes: nodes });
+    try {
+      const assistant = createAssistant({ country, env });
+      const params = getAssistantParams({ country, env }, { append: true, dialogNodes: nodes });
 
-    const workspace = await assistant.updateWorkspace(params);
+      const workspace = await assistant.updateWorkspace(params);
 
-    return workspace;
+      return workspace;
+    } catch (error) {
+      throw new WatsonError(errorMessages.cannotUpdate);
+    }
   }
 }

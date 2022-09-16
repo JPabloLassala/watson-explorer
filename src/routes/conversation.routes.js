@@ -1,7 +1,12 @@
 import express from 'express';
 import { DialogNodesController } from '../controllers';
 import { validate } from '../middlewares';
-import { copyNodeWithChildrenValidation, getNodeValidation, getNodeWithChildrenValidation } from '../validations';
+import {
+  copyNodeWithChildrenValidation,
+  getNodeTreeValidation,
+  getNodeValidation,
+  getNodeWithChildrenValidation,
+} from '../validations';
 
 const router = express.Router();
 

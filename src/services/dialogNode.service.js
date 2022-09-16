@@ -2,6 +2,7 @@ import autobind from 'es6-autobind';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../config';
 import { DialogNodeRepository } from '../repositories';
+import { NodeListNotFoundError, NodeNameNotFoundError } from '../utils';
 
 export class DialogNodeService {
   constructor() {
@@ -19,6 +20,10 @@ export class DialogNodeService {
     const nodeList = await this.dialogNodeRepository.getDialogNodes({ country, env });
     const targetNode = nodeList.find(n => n?.title === name);
 
+    if (targetNode === []) {
+      throw new NodeListNotFoundError({ country, env });
+    }
+
     return targetNode;
   }
 
@@ -27,9 +32,15 @@ export class DialogNodeService {
     let carryingIds = [];
 
     const nodeList = await this.dialogNodeRepository.getDialogNodes({ country, env });
-    const mainNode = this.getMainNode(nodeList);
+    const mainNode = this.getMainNode({ nodeList, country, env });
 
-    const [parentNode] = nodeList.filter(node => node.parent === mainNode.dialog_node && node.title === name);
+    const parentNodeRes = nodeList.filter(node => node.parent === mainNode.dialog_node && node.title === name);
+
+    if (parentNodeRes === []) {
+      throw new NodeNameNotFoundError({ env, country, name });
+    }
+
+    const parentNode = [parentNodeRes];
     resultNodes = [parentNode];
     carryingIds = [parentNode.dialog_node];
 
