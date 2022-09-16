@@ -54,6 +54,15 @@ export class DialogNodesController {
     return res.status(200).json(result);
   }
 
+  async handleGetNodeTree(req, res) {
+    console.log(req.params);
+    const { country, env } = req.params;
+    const { name } = req.body;
+    const list = await this.dialogNodeService.getDialogNodeTree({ country, env, name });
+
+    return res.status(200).send(list.toString());
+  }
+
   handleGetEntity(req, res) {}
 
   handleMejoraContinua(req, res) {}

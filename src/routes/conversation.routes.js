@@ -19,6 +19,7 @@ const CreateConversationRoutes = app => {
     handleFindNode,
     handleGetEntity,
     handleMejoraContinua,
+    handleGetNodeTree,
   } = dialogNodesController;
 
   app.use('/', router);
@@ -26,6 +27,7 @@ const CreateConversationRoutes = app => {
   router.get('/getNode/:country/:env/:id', validate(getNodeValidation), handleGetNode);
   router.post('/getNodeWithChildren/:country/:env', validate(getNodeWithChildrenValidation), handleGetNodeWithChildren);
   router.post('/copyNodeWithChildren/', validate(copyNodeWithChildrenValidation), handleCopyNodeWithChildren);
+  router.post('/getNodeTree/:country/:env', validate(getNodeTreeValidation), handleGetNodeTree);
   router.post('/findNode/:country/:env', handleFindNode);
   router.get('/getEntity/:country/:env/:name', handleGetEntity);
   router.post('/mejoraContinua/:country', handleMejoraContinua);

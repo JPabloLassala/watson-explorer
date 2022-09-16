@@ -1,4 +1,5 @@
 import autobind from 'es6-autobind';
+import { AsciiTree } from 'oo-ascii-tree';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../config';
 import { DialogNodeRepository } from '../repositories';
@@ -69,8 +70,44 @@ export class DialogNodeService {
     return result;
   }
 
-  getMainNode(nodeList) {
-    const [res] = nodeList.filter(node => node.title === config.watson.nodeNames.source);
+  async getDialogNodeTree({ country, env, name }) {
+    let resultNodes = [];
+    let carryingIds = [];
+    const nodesTree = {};
+
+    const nodeList = await this.dialogNodeRepository.getDialogNodes({ country, env });
+    const mainNode = this.getMainNode(nodeList);
+
+    if (!mainNode) return false;
+
+    const [parentNode] = nodeList.filter(node => node.parent === mainNode.dialog_node && node.title === name);
+    resultNodes = [parentNode];
+    carryingIds = [parentNode.dialog_node];
+    nodesTree[parentNode.dialog_node] = new AsciiTree(parentNode.title);
+
+    while (carryingIds.length) {
+      const nodes = nodeList.filter(node => carryingIds.includes(node.parent));
+      const nodesIds = nodes.map(n => n.dialog_node);
+
+      nodes.forEach(node => {
+        const nodeTree = new AsciiTree(node.title);
+        nodesTree[node.dialog_node] = nodeTree;
+        nodesTree[node.parent].add(nodeTree);
+      });
+
+      resultNodes = [...resultNodes, ...nodes];
+      carryingIds = nodesIds;
+    }
+
+    return nodesTree[parentNode.dialog_node];
+  }
+
+  getMainNode({ nodeList, country, env }) {
+    const res = nodeList.filter(node => node?.title?.includes(config.watson.nodeNames.source));
+
+    if (res === []) {
+      throw new NodeNameNotFoundError({ env, country, name: config.watson.nodeNames.source });
+    }
 
     return res;
   }
