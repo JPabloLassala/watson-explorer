@@ -2,12 +2,16 @@ env:
   browser: false
   node: true
   es2021: true
+  jest/globals: true
 extends:
   - prettier
   - standard
   - eslint:recommended
+  - plugin:jest/recommended
+
 plugins:
   - 'prettier'
+  - 'jest'
 parserOptions:
   ecmaVersion: 12
   sourceType: module
@@ -30,4 +34,7 @@ rules:
     indent: 0,
     curly: [0, 'multi'],
     import/no-duplicates: 0,
+    jest/no-done-callback: 0,
+    jest/no-test-prefixes: 0,
+    jest/no-disabled-tests: 0,
   }
