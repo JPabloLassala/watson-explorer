@@ -9,6 +9,7 @@ export class DialogNodeRepository {
   }
 
   async getDialogNodeId({ country, env, nodeId }, assistant = null) {
+    assistant = assistant || createAssistant({ country, env });
     try {
       const params = getAssistantParams({ country, env }, { dialogNode: nodeId });
 
